@@ -1,4 +1,7 @@
 node {
+    def path = '/home/fahmi/dicoding/a428-cicd-labs'
+    def username = 'fahmi'
+    def host = '127.0.0.1'
     docker.image('node:lts-buster-slim').inside('-p 3003:3000'){
     	stage('Build') {
             sh 'npm install'
@@ -6,10 +9,12 @@ node {
     	stage('Test') {
             sh './jenkins/scripts/test.sh'
     	}
-    	stage('Deliver') {
-            sh './jenkins/scripts/deliver.sh'
-            input 'Finished using the web site? (Click "Proceed" to continue)'
-            sh './jenkins/scripts/kill.sh'
+    	stage('Manual Approval') {
+           input 'Continue in deploy stage?'
     	}
+        stage('Deploy'){
+            sh "ssh $username@$host 'cd $path; git pull origin master; git push heroku react-app:master'"
+            sleep(60)
+        }
     }
 }
