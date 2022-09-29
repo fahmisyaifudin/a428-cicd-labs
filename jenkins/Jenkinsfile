@@ -1,8 +1,6 @@
 node {
-    def path = '/home/fahmi/dicoding/a428-cicd-labs'
-    def username = 'fahmi'
-    def host = '127.0.0.1'
-    docker.image('node:lts-buster-slim').inside('-p 3003:3000'){
+    checkout scm
+    docker.image('node:lts-buster-slim').inside('-p 3000:3000'){
     	stage('Build') {
             sh 'npm install'
     	}
@@ -13,7 +11,7 @@ node {
            input 'Continue in deploy stage?'
     	}
         stage('Deploy'){
-            sh "ssh $username@$host 'cd $path; git pull origin master; git push heroku react-app:master'"
+            sh "git push heroku react-app:master"
             sleep(60)
         }
     }
