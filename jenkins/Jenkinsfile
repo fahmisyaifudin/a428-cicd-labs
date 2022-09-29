@@ -1,5 +1,6 @@
 node {
     checkout scm
+    sh 'heroku git:remote -a infinite-tundra-49512'
     docker.image('node:lts-buster-slim').inside {
     	stage('Build') {
             sh 'yarn install'
@@ -7,12 +8,12 @@ node {
     	stage('Test') {
             sh './jenkins/scripts/test.sh'
     	}
-    	stage('Manual Approval') {
+    }
+    stage('Manual Approval') {
            input 'Continue in deploy stage?'
-    	}
-        stage('Deploy'){
-            sh "git push heroku react-app:master"
-            sleep(60)
-        }
+    }
+    stage('Deploy'){
+        sh "git push heroku HEAD:master"
+        sleep(60)
     }
 }
